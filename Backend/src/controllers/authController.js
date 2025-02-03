@@ -1,10 +1,5 @@
 const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "2d" });
-};
+const { generateToken } = require("../utils/tokenUtils");
 
 // Register User
 exports.register = async (req, res) => {
@@ -16,7 +11,7 @@ exports.register = async (req, res) => {
     if (userExists) return res.status(400).json({ message: "User already exists" });
 
     const user = await User.create({ name, email, password });
-    res.status(201).json({ message: "User registered successfully", token: generateToken(user._id) });
+    res.status(201).json({ message: "User registered successfully", token: generateToken(user, "1d") });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -32,7 +27,7 @@ exports.login = async (req, res) => {
     if (!user || !(await user.comparePassword(password)))
       return res.status(401).json({ message: "Invalid email or password" });
 
-    res.status(200).json({ message: "Login successful", token: generateToken(user._id) });
+    res.status(200).json({ message: "Login successful", token: generateToken(user, "1d") });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
