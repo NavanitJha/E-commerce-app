@@ -1,10 +1,10 @@
 # Installation and Setup Instructions
 
-git clone https://github.com/your-repository/ecommerce-app
-cd ecommerce-app/frontend
-npm install
+git clone https://github.com/your-repository/ecommerce-app\
+cd ecommerce-app/frontend\
+npm install\
 npm start
-gi
+
 ## Available Scripts
 
 In the project directory, you can run:
