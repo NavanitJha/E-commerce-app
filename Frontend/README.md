@@ -1,7 +1,7 @@
 # Installation and Setup Instructions
 
-git clone https://github.com/your-repository/ecommerce-app\
-cd ecommerce-app/frontend\
+git clone https://github.com/NavanitJha/E-commerce-app.git
+cd E-commerce-app\
 npm install\
 npm start
 
