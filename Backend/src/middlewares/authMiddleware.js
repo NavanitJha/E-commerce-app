@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/userModel");
 
-exports.protect = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
@@ -16,3 +16,6 @@ exports.protect = async (req, res, next) => {
     res.status(401).json({ message: "Not authorized, invalid token" });
   }
 };
+
+module.exports = authMiddleware; 
+
