@@ -30,6 +30,7 @@ This is the backend for an eCommerce application, providing APIs for authenticat
 
 ### 1️⃣ Clone the Repository  
 git clone https://github.com/NavanitJha/E-commerce-app
+
 cd E-Commerce-app/Backend
 
 ### 2️⃣ Install Dependencies  
@@ -40,7 +41,9 @@ npm install
 Create a `.env` file in the root directory and add:  
 
 MONGO_URI1= your-mongodb-uri
+
 JWT_SECRET= your-secret-key
+
 PORT=5000
 
 ### 4️⃣ Start the Server  
