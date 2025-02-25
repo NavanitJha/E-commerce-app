@@ -73,17 +73,12 @@ Since **POST requests** cannot be tested directly in a browser, use:
 - **VS Studio ThunderClient**  
 
 Example `postman` command to test login:  
-Method : POST http://localhost:5000/api/auth/login 
-Headers : Content-Type: application/json 
-Body :'{"email": "user@example.com", "password": "123456"}'
 
-Method: POST
-URL: http://localhost:5000/api/auth/login
+`Method`: POST    http://localhost:5000/api/auth/login
 
-Headers:
-Content-Type: application/json
+`Headers`: Content-Type: application/json
 
-Body:
+`Body`:
 {
     "email": "user@example.com",
     "password": "123456"
