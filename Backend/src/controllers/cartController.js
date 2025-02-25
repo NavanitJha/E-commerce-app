@@ -3,7 +3,7 @@
 const Cart = require('../models/cartModel');
 
 // Add product to cart
-exports.addToCart = async (req, res) => {
+const addToCart = async (req, res) => {
     try {
         const { productId, quantity = 1 } = req.body; // Ensure default quantity
         const userId = req.user.id;
@@ -31,7 +31,7 @@ exports.addToCart = async (req, res) => {
 
 
 // Remove product from cart
-exports.removeFromCart = async (req, res) => {
+const removeFromCart = async (req, res) => {
     try {
         const { productId } = req.params;  // Use params instead of body
         const userId = req.user.id;
@@ -53,7 +53,7 @@ exports.removeFromCart = async (req, res) => {
 
 
 // Get user's cart
-exports.getCart = async (req, res) => {
+const getCart = async (req, res) => {
     try {
         const userId = req.user.id;
         const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -67,3 +67,5 @@ exports.getCart = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+module.exports = { addToCart, removeFromCart, getCart };
