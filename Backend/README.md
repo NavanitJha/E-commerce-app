@@ -47,7 +47,6 @@ JWT_SECRET= your-secret-key
 PORT=5000
 
 ### 4️⃣ Start the Server  
-#### Development Mode  
 npm start
 
 #### Production Deployment url
