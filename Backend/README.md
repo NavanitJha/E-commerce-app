@@ -29,8 +29,8 @@ This is the backend for an eCommerce application, providing APIs for authenticat
 ## 🔧 Installation & Setup  
 
 ### 1️⃣ Clone the Repository  
-git clone <your-repo-url>
-cd eCommerce-app/Backend
+git clone https://github.com/NavanitJha/E-commerce-app
+cd E-Commerce-app/Backend
 
 ### 2️⃣ Install Dependencies  
 npm install
@@ -39,8 +39,8 @@ npm install
 ### 3️⃣ Set Up Environment Variables  
 Create a `.env` file in the root directory and add:  
 
-MONGO_URI1=<your-mongodb-uri>
-JWT_SECRET=<your-secret-key>
+MONGO_URI1= your-mongodb-uri
+JWT_SECRET= your-secret-key
 PORT=5000
 
 ### 4️⃣ Start the Server  
@@ -72,8 +72,7 @@ Since **POST requests** cannot be tested directly in a browser, use:
 - **cURL (Command Line)**  
 - **VS Studio ThunderClient**  
 
-Example postman command to test login:  
+Example `postman` command to test login:  
 Method : POST http://localhost:5000/api/auth/login 
 Headers : Content-Type: application/json 
 Body :'{"email": "user@example.com", "password": "123456"}'
-
