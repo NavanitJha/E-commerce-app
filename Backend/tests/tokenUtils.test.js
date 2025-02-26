@@ -1,9 +1,11 @@
+// tests/tokenUtils.test.js
+
 const jwt = require("jsonwebtoken");
 const { generateToken, verifyToken } = require("../src/utils/tokenUtils");
 
 jest.mock("jsonwebtoken");
 
-describe("Token Utilities", () => {
+describe("Token Utilities test cases", () => {
     const mockUser = { _id: "1234567890", role: "user" };
 
     afterEach(() => {

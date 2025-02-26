@@ -1,3 +1,5 @@
+// tests/db.test.js
+
 const mongoose = require("mongoose");
 const connectDB = require("../src/config/db");
 

@@ -1,15 +1,10 @@
+// tests/productController.test.js
+
 const request = require('supertest');
-const express = require('express');
-const mongoose = require('mongoose');
 const Product = require('../src/models/productModel');
-const productRoutes = require('../src/routes/productRoutes');
+const app = require('../src/app');
 
-// Mocking the Product model
 jest.mock('../src/models/productModel');
-
-const app = express();
-app.use(express.json());
-app.use('/api/products/', productRoutes);
 
 describe('Product Controller - GET /api/products', () => {
     afterEach(() => {
@@ -30,9 +25,8 @@ describe('Product Controller - GET /api/products', () => {
             sort: jest.fn().mockResolvedValue(mockProducts),
         }));
         
-
         const res = await request(app).get('/api/products');
-        
+    
         expect(res.status).toBe(200);
         expect(res.body).toEqual(mockProducts);
     });

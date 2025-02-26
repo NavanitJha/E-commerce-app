@@ -1,4 +1,5 @@
 // tests/testDB.js
+
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
@@ -30,14 +31,11 @@ const connectTestDB = async () => {
 };
 
 
-
 // Close MongoDB and server properly
 const closeTestDB = async () => {
   console.log("Closing test DB...");
   
   // Close the mongoose connection and drop the test database
-  // await mongoose.connection.dropDatabase();
-  // await mongoose.connection.close();
   if (mongoose.connection.readyState !== 0) {
     await mongoose.connection.dropDatabase();
     await mongoose.connection.close();

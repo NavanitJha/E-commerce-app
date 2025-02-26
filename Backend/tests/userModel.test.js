@@ -1,3 +1,5 @@
+// tests/userModel.test.js
+
 const mockingoose = require("mockingoose");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
@@ -44,15 +46,15 @@ describe("User Model", () => {
 
         mockUser.isModified = jest.fn().mockReturnValue(true);
 
-        await mockUser.save(); // Ensure middleware executes
+        await mockUser.save(); 
 
         expect(mockUser.isModified).toHaveBeenCalledWith("password");
         expect(bcrypt.hash).toHaveBeenCalledWith("plainPassword123", 10);
-        expect(mockUser.password).toBe("hashedPassword123"); // Ensure password is hashed
+        expect(mockUser.password).toBe("hashedPassword123"); 
     });
 
     it("should NOT hash the password if it is not modified", async () => {
-        bcrypt.hash.mockResolvedValue("thisShouldNotBeCalled"); // Ensure hashing isn't called
+        bcrypt.hash.mockResolvedValue("thisShouldNotBeCalled"); 
     
         const mockUser = new User({
             name: "Test User",
@@ -60,12 +62,12 @@ describe("User Model", () => {
             password: "alreadyHashedPassword123",
         });
     
-        mockUser.isModified = jest.fn().mockReturnValue(false); // Simulate password not modified
+        mockUser.isModified = jest.fn().mockReturnValue(false); 
     
-        await mockUser.save(); // Trigger the Mongoose pre-save hook
+        await mockUser.save(); 
     
         expect(mockUser.isModified).toHaveBeenCalledWith("password");
-        expect(bcrypt.hash).not.toHaveBeenCalled(); // bcrypt.hash should NOT be called
+        expect(bcrypt.hash).not.toHaveBeenCalled(); 
     });
     
 
@@ -96,6 +98,6 @@ describe("User Model", () => {
         const isMatch = await mockUser.comparePassword("wrongPassword");
 
         expect(bcrypt.compare).toHaveBeenCalledWith("wrongPassword", "hashedPassword123");
-        expect(isMatch).toBe(false); // Ensures false is returned when passwords don’t match
+        expect(isMatch).toBe(false); 
     });
 });
