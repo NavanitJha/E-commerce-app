@@ -10,6 +10,7 @@ import LoginPage from "../pages/Authentication/LoginPage";
 import SignUpPage from "../pages/Authentication/SignUpPage";
 import store from "../store/index.js";
 import { Provider } from "react-redux";
+import OrderList from "../pages/OrderList.js";
 
 const AppRouter = () => (
   <Provider store={store}>
@@ -33,6 +34,8 @@ const AppRouter = () => (
           element={<PrivateRoute element={<HomePage />} />}
         />
         <Route path="/cart" element={<PrivateRoute element={<CartPage />} />} />
+        <Route path="/orders" element={<PrivateRoute element={<OrderList />} />} />
+
         <Route
           path="/checkout"
           element={<PrivateRoute element={<CheckoutPage />} />}
