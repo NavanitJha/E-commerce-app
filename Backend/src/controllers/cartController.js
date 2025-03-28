@@ -68,4 +68,42 @@ const getCart = async (req, res) => {
     }
 };
 
-module.exports = { addToCart, removeFromCart, getCart };
+// Decrease product quantity in cart
+const decreaseQuantity = async (req, res) => {
+    try {
+        console.log("User Info:", req.user); // Debugging
+
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized: No user data' });
+        }
+
+        const { productId, quantity = 1 } = req.body; 
+        const userId = req.user.id;  // This is failing because req.user is undefined
+
+        let cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+
+        if (productIndex === -1) {
+            return res.status(404).json({ message: 'Product not found in cart' });
+        }
+
+        if (cart.items[productIndex].quantity > quantity) {
+            cart.items[productIndex].quantity -= quantity;
+        } else {
+            cart.items.splice(productIndex, 1);
+        }
+
+        await cart.save();
+        res.status(200).json(cart);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+module.exports = { addToCart, removeFromCart, getCart, decreaseQuantity };
