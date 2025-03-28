@@ -57,16 +57,17 @@ https://ecommerce-backend-black-ten.vercel.app/api/products
 
 ## 🔥 API Endpoints  
 
-| Endpoint                        | Method | Description                 |
-|---------------------------------|--------|-----------------------------|
-| `/api/auth/register`            | POST   | Register a new user         |
-| `/api/auth/login`               | POST   | User login & token issuance |
-| `/api/products`                 | GET    | Fetch all products          |
-| `/api/cart/add`                 | POST   | Add items to the cart       | 
-| `/api/cart/remove/<product_id>` | DELETE | Remove items from the cart  |
-| `/api/cart`                     | GET    | View all items of cart      |
-| `/api/order/checkout`           | POST   | Place an order              |
-| `/api/order`                    | GET    | View order details          |
+| Endpoint                        | Method | Description                           |
+|---------------------------------|--------|---------------------------------------|
+| `/api/auth/register`            | POST   | Register a new user                   |
+| `/api/auth/login`               | POST   | User login & token issuance           |
+| `/api/products`                 | GET    | Fetch all products                    |
+| `/api/cart/add`                 | POST   | Add items to the cart                 | 
+| `/api/cart/decrease           ` | PATCH  | Decrease item quantity from cart      |
+| `/api/cart/remove/<product_id>` | DELETE | Remove items from the cart            |
+| `/api/cart`                     | GET    | View all items of cart                |
+| `/api/order/checkout`           | POST   | Place an order                        |
+| `/api/order`                    | GET    | View order details                    |
 
 ## 🛠️ Testing API in Browser  
 Since **POST requests** cannot be tested directly in a browser, use:  
