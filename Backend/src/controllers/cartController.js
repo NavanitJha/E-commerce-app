@@ -71,14 +71,8 @@ const getCart = async (req, res) => {
 // Decrease product quantity in cart
 const decreaseQuantity = async (req, res) => {
     try {
-        console.log("User Info:", req.user); // Debugging
-
-        if (!req.user) {
-            return res.status(401).json({ message: 'Unauthorized: No user data' });
-        }
-
         const { productId, quantity = 1 } = req.body; 
-        const userId = req.user.id;  // This is failing because req.user is undefined
+        const userId = req.user.id; 
 
         let cart = await Cart.findOne({ userId });
 

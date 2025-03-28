@@ -230,3 +230,110 @@ describe('Test cases for getting user cart', () => {
     expect(res.body.message).toBe('Database error');
   });  
 });
+
+describe('Test cases for decreasing product quantity in cart', () => {
+  let token;
+  let userId;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    userId = new mongoose.Types.ObjectId().toString();
+    token = `Bearer mockToken`;
+    jwt.verify.mockReturnValue({ id: userId });
+    User.findById.mockResolvedValue({ _id: userId, name: "Test User" });
+  });
+
+  it('should decrease product quantity in cart', async () => {
+    const existingCart = {
+      userId,
+      items: [{ productId: '123', quantity: 5 }],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(existingCart);
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123', quantity: 2 });
+
+    expect(res.status).toBe(200);
+    expect(existingCart.items[0].quantity).toBe(3);
+    expect(res.body.items[0].quantity).toBe(3);
+  });
+
+  it('should default quantity to 1 when not provided', async () => {
+    const existingCart = {
+      userId,
+      items: [{ productId: '123', quantity: 5 }],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(existingCart);
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123'});
+
+    expect(res.status).toBe(200);
+    expect(existingCart.items[0].quantity).toBe(4);
+    expect(res.body.items[0].quantity).toBe(4);
+  });
+
+  it('should remove product from cart if quantity becomes zero', async () => {
+    const existingCart = {
+      userId,
+      items: [{ productId: '123', quantity: 2 }],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(existingCart);
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123', quantity: 2 });
+
+    expect(res.status).toBe(200);
+    expect(existingCart.items).toHaveLength(0);
+  });
+
+  it('should return 404 if cart does not exist', async () => {
+    Cart.findOne.mockResolvedValue(null);
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123', quantity: 1 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBe('Cart not found');
+  });
+
+  it('should return 404 if product is not found in cart', async () => {
+    const existingCart = {
+      userId,
+      items: [{ productId: '124', quantity: 2 }],
+      save: jest.fn().mockResolvedValue(true),
+    };
+    Cart.findOne.mockResolvedValue(existingCart);
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123', quantity: 1 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBe('Product not found in cart');
+  });
+
+  it('should return 500 if an error occurs while decreasing quantity', async () => {
+    Cart.findOne.mockRejectedValue(new Error('Database error'));
+
+    const res = await request(app)
+      .patch('/api/cart/decrease')
+      .set('Authorization', token)
+      .send({ productId: '123', quantity: 1 });
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toBe('Database error');
+  });
+});
