@@ -2,20 +2,67 @@
 
 import React, { useState } from "react";
 import { TextField, Button, Grid, Typography, Container } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../features/authSlice";
+import { setLoading } from "../../features/productSlice";
+import { useAuthentication } from "../../hooks/useAuthentication";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { login } = useAuthentication();
+  const { loading } = useSelector((state) => state.productData);
 
-  const handleLogin = () => {
-    // Add your authentication logic here
-    dispatch(login({ user: { email }, token: "jwt-token" }));
-    navigate.push("/");
+  const validateField = (name, value) => {
+    switch (name) {
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value)
+          ? ""
+          : "Please enter a valid email address.";
+      case "password":
+        return value.length >= 6
+          ? ""
+          : "Password must be at least 6 characters.";
+      default:
+        return "";
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: validateField(name, value) });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    let newErrors = {
+      email: validateField("email", formData.email),
+      password: validateField("password", formData.password),
+    };
+
+    if (newErrors.name || newErrors.email || newErrors.password) {
+      setErrors(newErrors);
+    } else {
+      // Proceed with form submission (e.g., API call)
+      dispatch(setLoading(true));
+      const response = await login(formData);
+      if (response) {
+        // Reset form
+        setFormData({ email: "", password: "" });
+        setErrors({ email: "", password: "" });
+        navigate("/dashboard");
+      }
+    }
   };
 
   return (
@@ -30,34 +77,46 @@ const LoginPage = () => {
               label="Email"
               variant="outlined"
               fullWidth
+              type="email"
+              required
               margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
             />
             <TextField
               label="Password"
               type="password"
               variant="outlined"
               fullWidth
+              required
               margin="normal"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
             />
             <Button
               variant="contained"
               color="primary"
               fullWidth
+              loading={loading}
+              loadingPosition="center"
               onClick={handleLogin}
+              style={{ height: 35 }}
             >
-              Login
+              {!loading ? "Login" : null}
             </Button>
           </form>
           <Typography align="center" style={{ marginTop: "10px" }}>
             Don't have an account? <a href="/signup">Sign up</a>
           </Typography>
-          <Typography align="center" style={{ marginTop: "10px" }}>
+          {/* <Typography align="center" style={{ marginTop: "10px" }}>
             <a href="/forgot-password">Forgot Password?</a>
-          </Typography>
+          </Typography> */}
         </Grid>
       </Grid>
     </Container>

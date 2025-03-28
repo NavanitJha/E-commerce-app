@@ -1,30 +1,32 @@
-// src/redux/slices/authSlice.js
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuthenticated: false,
-  user: null,
-  token: null,
+  userDetails: null,
+  message: null,
+  toastMsg: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action) => {
-      state.isAuthenticated = true;
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+    setLogin: (state, action) => {
+      state.userDetails = action.payload;
+      localStorage.setItem('jwtToken', action.payload.token);
     },
-    logout: (state) => {
-      state.isAuthenticated = false;
-      state.user = null;
-      state.token = null;
+    setLogout: (state) => {
+      state.userDetails = null;
+      localStorage.removeItem('jwtToken');
+    },
+    setMessage: (state, action) => {
+      state.message = action.payload;
+    },
+    setToastMsg: (state, action) => {
+      state.toastMsg = action.payload;
     },
   },
 });
 
-export const { login, logout } = authSlice.actions;
-export const selectIsAuthenticated = (state) => state?.auth?.isAuthenticated;
+export const { setLogin, setLogout, setMessage, setToastMsg } = authSlice.actions;
 export default authSlice.reducer;

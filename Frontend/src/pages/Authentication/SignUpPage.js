@@ -1,15 +1,71 @@
 import React, { useState } from "react";
 import { TextField, Button, Grid, Typography, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../features/productSlice";
 
 const SignUpPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { signUp } = useAuthentication();
+  const { loading } = useSelector((state) => state.productData);
 
-  const handleSignup = () => {
-    // Implement signup logic here, e.g., call an API
-    navigate.push("/login");
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    let newErrors = {
+      name: validateField("name", formData.name),
+      email: validateField("email", formData.email),
+      password: validateField("password", formData.password),
+    };
+
+    if (newErrors.name || newErrors.email || newErrors.password) {
+      setErrors(newErrors);
+    } else {
+      // Proceed with form submission (e.g., API call)
+      dispatch(setLoading(true));
+      const response = await signUp(formData);
+      if (response) {
+        // Reset form
+        setFormData({ name: "", email: "", password: "" });
+        setErrors({ name: "", email: "", password: "" });
+        navigate("/login");
+      }
+    }
+  };
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "name":
+        return value.trim() ? "" : "Name is required.";
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(value)
+          ? ""
+          : "Please enter a valid email address.";
+      case "password":
+        return value.length >= 6
+          ? ""
+          : "Password must be at least 6 characters.";
+      default:
+        return "";
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: validateField(name, value) });
   };
 
   return (
@@ -21,29 +77,53 @@ const SignUpPage = () => {
           </Typography>
           <form onSubmit={handleSignup}>
             <TextField
-              label="Email"
+              label="Name"
               variant="outlined"
               fullWidth
               margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              type="email"
+              required
+              margin="normal"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
             />
             <TextField
               label="Password"
               type="password"
               variant="outlined"
               fullWidth
+              required
               margin="normal"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
             />
             <Button
               variant="contained"
               color="primary"
               fullWidth
+              loading={loading}
+              loadingPosition="center"
               onClick={handleSignup}
+              style={{ height: 35 }}
             >
-              Sign Up
+              {!loading ? "Sign Up" : null}
             </Button>
           </form>
           <Typography align="center" style={{ marginTop: "10px" }}>
