@@ -46,8 +46,8 @@ function CartPage() {
   }, [token, fetchCartItems]);
 
   const handleRemove = (product) => {
-    const { _id: productId } = product;
-    deleteCartItems(token, productId);
+    const { productId: { _id } } = product;   //product.productId._id
+    deleteCartItems(token, _id);
   };
 
   const handleClearCart = () => {

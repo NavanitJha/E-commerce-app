@@ -66,6 +66,7 @@ https://ecommerce-backend-black-ten.vercel.app/api/products
 | `/api/cart/decrease`            | PATCH  | Decrease item quantity from cart      |
 | `/api/cart/remove/<product_id>` | DELETE | Remove items from the cart            |
 | `/api/cart`                     | GET    | View all items of cart                |
+| `/api/cart/clear`               | DELETE | Clear all items from cart             |
 | `/api/order/checkout`           | POST   | Place an order                        |
 | `/api/order`                    | GET    | View order details                    |
 

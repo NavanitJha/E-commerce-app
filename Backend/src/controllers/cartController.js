@@ -23,7 +23,7 @@ const addToCart = async (req, res) => {
         }
 
         await cart.save();
-        res.status(200).json(cart); // Explicit success response
+        res.status(200).json(cart); 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -58,8 +58,12 @@ const getCart = async (req, res) => {
         const userId = req.user.id;
         const cart = await Cart.findOne({ userId }).populate('items.productId');
 
+        // if (!cart) {
+        //     return res.status(404).json({ message: 'Cart is empty' });
+        // }
+
         if (!cart) {
-            return res.status(404).json({ message: 'Cart is empty' });
+            return res.status(200).json([]); // Return 200 OK with an empty array
         }
 
         res.status(200).json(cart);
@@ -99,5 +103,25 @@ const decreaseQuantity = async (req, res) => {
     }
 };
 
+// Clear all items from cart
+const clearCart = async (req, res) => {
+    try {
+        const userId = req.user.id;
 
-module.exports = { addToCart, removeFromCart, getCart, decreaseQuantity };
+        let cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(200).json({ message: 'Cart is already empty' });
+        }
+
+        await Cart.deleteOne({ userId });
+
+        res.status(200).json({ message: 'Cart cleared successfully'});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+module.exports = { addToCart, removeFromCart, getCart, decreaseQuantity, clearCart };
