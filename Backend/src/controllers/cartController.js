@@ -72,6 +72,7 @@ const getCart = async (req, res) => {
     }
 };
 
+
 // Decrease product quantity in cart
 const decreaseQuantity = async (req, res) => {
     try {
@@ -103,6 +104,7 @@ const decreaseQuantity = async (req, res) => {
     }
 };
 
+
 // Clear all items from cart
 const clearCart = async (req, res) => {
     try {
@@ -121,7 +123,6 @@ const clearCart = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 
 module.exports = { addToCart, removeFromCart, getCart, decreaseQuantity, clearCart };

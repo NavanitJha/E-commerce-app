@@ -204,7 +204,7 @@ describe('Test cases for getting user cart', () => {
     expect(res.body.items[0].quantity).toBe(2);
   });
 
-  it('should return 404 if cart is empty', async () => {
+  it('should return 200 with empty array if cart is empty', async () => {
     Cart.findOne.mockImplementation(() => ({
       populate: jest.fn().mockResolvedValue(null),
     }));
@@ -213,8 +213,8 @@ describe('Test cases for getting user cart', () => {
       .get('/api/cart')
       .set('Authorization', token);
 
-    expect(res.status).toBe(404);
-    expect(res.body.message).toBe('Cart is empty');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
   });
 
   it('should return 500 if an error occurs while fetching the cart', async () => {
@@ -332,6 +332,53 @@ describe('Test cases for decreasing product quantity in cart', () => {
       .patch('/api/cart/decrease')
       .set('Authorization', token)
       .send({ productId: '123', quantity: 1 });
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toBe('Database error');
+  });
+});
+
+describe('Test cases for clearing user cart', () => {
+  let token;
+  let userId;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    userId = new mongoose.Types.ObjectId().toString();
+    token = `Bearer mockToken`;
+    jwt.verify.mockReturnValue({ id: userId });
+    User.findById.mockResolvedValue({ _id: userId, name: "Test User" });
+  });
+
+  it("should clear the user's cart and return success message", async () => {
+    Cart.findOne.mockResolvedValue({ userId, items: [{ productId: '123', quantity: 2 }] });
+    Cart.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+    const res = await request(app)
+      .delete('/api/cart/clear')
+      .set('Authorization', token);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe('Cart cleared successfully');
+  });
+
+  it("should return 200 with message if cart is already empty", async () => {
+    Cart.findOne.mockResolvedValue(null);
+
+    const res = await request(app)
+      .delete('/api/cart/clear')
+      .set('Authorization', token);
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe('Cart is already empty');
+  });
+
+  it('should return 500 if an error occurs while clearing the cart', async () => {
+    Cart.findOne.mockRejectedValue(new Error('Database error'));
+
+    const res = await request(app)
+      .delete('/api/cart/clear')
+      .set('Authorization', token);
 
     expect(res.status).toBe(500);
     expect(res.body.message).toBe('Database error');
