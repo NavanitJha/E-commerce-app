@@ -128,7 +128,7 @@ describe('Test cases for removing products from cart', () => {
       .set('Authorization', token);
 
     expect(res.status).toBe(200);
-    expect(res.body.items).toHaveLength(0); 
+    expect(res.body.cart.items).toHaveLength(0); 
   });
 
   it('should return 404 if cart does not exist', async () => {
@@ -156,8 +156,8 @@ describe('Test cases for removing products from cart', () => {
       .set('Authorization', token);
 
     expect(res.status).toBe(200);
-    expect(res.body.items).toHaveLength(1);
-    expect(res.body.items[0].productId).toBe('124');
+    expect(res.body.cart.items).toHaveLength(1);
+    expect(res.body.deletedProductId).toBe('123');
   });
 
   it('should return 500 if an error occurs while removing from cart', async () => {
