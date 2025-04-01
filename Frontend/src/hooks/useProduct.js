@@ -1,11 +1,17 @@
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setLoading, setOrderList, setProducts } from "../features/productSlice";
+import {
+  setLoading,
+  setOrderList,
+  setProducts,
+} from "../features/productSlice";
 import { REST_API_BASE_URL, toastMsg } from "../config";
-import { addItem, removeItem, setCartList } from "../features/cartSlice";
+import { addItem, clearCart, removeItem, setCartList } from "../features/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 export const useProduct = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     const config = {
@@ -24,6 +30,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -50,6 +59,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -76,6 +88,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -93,7 +108,7 @@ export const useProduct = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-    await axios
+    return await axios
       .request(config) // Replace with your API endpoint
       .then((response) => {
         dispatch(removeItem(response.data));
@@ -102,10 +117,47 @@ export const useProduct = () => {
           message: "Item deleted successfully!",
           type: "success",
         });
+        return response;
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
+        toastMsg({
+          message: error?.response?.data?.message || "Something went wrong.",
+          type: "error",
+        });
+        return false;
+      });
+  };
+
+  const clearCartData = async (token) => {
+    const config = {
+      method: "delete",
+      url: `${REST_API_BASE_URL}/cart/clear`,
+      headers: {
+        "Content-Type": "application/json", // Set default headers
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    await axios
+      .request(config) // Replace with your API endpoint
+      .then((response) => {
+        dispatch(clearCart());
+        dispatch(setLoading(false));
+        toastMsg({
+          message: "Cart is empty!",
+          type: "success",
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -137,6 +189,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error.response);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -175,6 +230,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error.response);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -201,6 +259,9 @@ export const useProduct = () => {
       .catch((error) => {
         console.error("Error fetching data:", error.response);
         dispatch(setLoading(false));
+        if(error?.response?.status === 401) {
+          navigate("/login")
+        }
         toastMsg({
           message: error?.response?.data?.message || "Something went wrong.",
           type: "error",
@@ -215,6 +276,7 @@ export const useProduct = () => {
     fetchCartItems,
     addProductToCart,
     deleteCartItems,
+    clearCartData,
     decreaseItemQuantity,
     proceedToCheckout,
   };
