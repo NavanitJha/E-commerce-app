@@ -1,10 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  clearCart,
-  incrementQuantity,
-  decrementQuantity,
-} from "../features/cartSlice";
+import { incrementQuantity, decrementQuantity } from "../features/cartSlice";
 import {
   Button,
   List,
@@ -22,6 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { toastMsg } from "../config";
 import LoadingWidget from "../components/LoadingWidget";
+import { setLoading } from "../features/productSlice";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -29,6 +26,7 @@ function CartPage() {
   const {
     fetchCartItems,
     deleteCartItems,
+    clearCartData,
     addProductToCart,
     proceedToCheckout,
     decreaseItemQuantity,
@@ -40,18 +38,24 @@ function CartPage() {
 
   useEffect(() => {
     if (token && !hasFetchedCartItems.current) {
+      dispatch(setLoading(true));
       fetchCartItems(token);
       hasFetchedCartItems.current = true;
     }
-  }, [token, fetchCartItems]);
+  }, [token, fetchCartItems, dispatch]);
 
-  const handleRemove = (product) => {
-    const { productId: { _id } } = product;   //product.productId._id
-    deleteCartItems(token, _id);
+  const handleRemove = async (product) => {
+    const { productId } = product;
+    const response = await deleteCartItems(token, productId?._id);
+    dispatch(setLoading(true));
+    if (response) {
+      // Fetch updated cart items after deletion
+      fetchCartItems(token);
+    }
   };
 
   const handleClearCart = () => {
-    dispatch(clearCart());
+    clearCartData(token);
   };
 
   const handleCheckout = async () => {
@@ -90,9 +94,11 @@ function CartPage() {
       0
     );
 
-  return loading ? (
-    <LoadingWidget />
-  ) : cartList?.items?.length ? (
+  if (loading) {
+    return <LoadingWidget />;
+  }
+
+  return cartList?.items?.length ? (
     <div style={{ padding: 20, marginTop: 10, marginBottom: 5 }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h4" gutterBottom>
@@ -102,7 +108,7 @@ function CartPage() {
           variant="contained"
           color="primary"
           onClick={() => navigate("/dashboard")}
-          style={{ marginTop: "20px", marginRight:"20px" }}
+          style={{ marginTop: "20px", marginRight: "20px" }}
         >
           Back to home
         </Button>
@@ -179,7 +185,7 @@ function CartPage() {
       </div>
     </div>
   ) : (
-    <NoDataFound NoDataMessage={"No data found"} />
+    <NoDataFound NoDataMessage={"Cart is empty"} />
   );
 }
 
